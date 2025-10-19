@@ -6,6 +6,7 @@ const helmet = require('helmet'); // Security Headers
 const rateLimit = require('express-rate-limit'); // DDoS/Brute Force se bachata hai
 const userRoutes = require('./routes/userRoutes'); // User Routes import kiye
 const { notFound, errorHandler } = require('./middleware/errorMiddleware'); // Error Handlers (aage banaenge)
+const cors = require('cors');
 
 
 dotenv.config();
@@ -17,6 +18,10 @@ app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // Har IP se 15 minute mein 100 requests ki limit
     message: 'Too many requests from this IP, please try again after 15 minutes',
+}));
+app.use(cors({
+    origin: 'http://localhost:5173', // Frontend ka URL
+    credentials: true, // Cookies allow karne ke liye
 }));
 
 // 2. Body Parser (JSON data ko parse karne ke liye)
