@@ -6,9 +6,12 @@ const {
     refreshToken,
     getUserProfile,
     forgotPassword, 
-    resetPassword 
+    resetPassword,
+    updateUserProfile,
+    uploadProfilePicture
 } = require('../controllers/userController');
-const protect = require('../middleware/authMiddleware'); // Authorization Middleware (aage banayenge)
+const protect = require('../middleware/authMiddleware'); 
+const { upload } = require('../config/cloudinary');
 
 const router = express.Router();
 
@@ -17,7 +20,10 @@ router.post('/signup', registerUser);
 router.post('/login', loginUser);
 router.post('/refresh', refreshToken);
 router.post('/logout', logoutUser); 
-router.get('/profile', protect, getUserProfile); 
+router.post('/upload-profile-picture', protect, upload.single('profilePicture'), uploadProfilePicture);
+router.route('/profile')
+    .get(protect, getUserProfile)
+    .put(protect, updateUserProfile); 
 
 router.post('/forgotpassword', forgotPassword);
 router.put('/resetpassword/:token', resetPassword);
