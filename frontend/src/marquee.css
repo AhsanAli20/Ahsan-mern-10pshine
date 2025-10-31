@@ -1,0 +1,14 @@
+/* Custom Marquee Animation */
+.marquee {
+    animation: marquee 10s linear infinite; /* Animation speed aur direction set ki hai */
+    display: inline-block;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(100%); /* Start right se */
+    }
+    to {
+        transform: translateX(-100%); /* End left par */
+    }
+}
