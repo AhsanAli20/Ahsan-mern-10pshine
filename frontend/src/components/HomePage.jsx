@@ -248,7 +248,7 @@ const HomePage = () => {
                             className="mb-6 sm:mb-8"
                         >
                             <h1 className={`text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 ${textBase}`}>
-                                Your Ideas. Organized. 💡
+                                Your Ideas. Organized. 
                             </h1>
                             <p className={`text-sm sm:text-lg ${textSecondary}`}>
                                 Login or register now to start writing your notes!
@@ -268,9 +268,9 @@ const HomePage = () => {
                                 Why Join NoteApp?
                             </h2>
                             <ul className={`list-disc list-inside text-lg mb-6 ${textSecondary} space-y-2`}>
-                                <li>✨ Secure cloud storage for all your notes.</li>
-                                <li>✨ Sleek dark mode/light mode experience.</li>
-                                <li>✨ Easy-to-use interface.</li>
+                                <li> Secure cloud storage for all your notes.</li>
+                                <li> Sleek dark mode/light mode experience.</li>
+                                <li> Easy-to-use interface.</li>
                             </ul>
                             
                             <motion.button 
