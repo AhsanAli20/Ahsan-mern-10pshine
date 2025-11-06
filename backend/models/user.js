@@ -8,14 +8,6 @@ const userSchema = mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profilePicture: {  
-        type: String,
-        default: 'https://i.pravatar.cc/150?img=5'
-    },
-    cloudinaryPublicId: {  // ✅ Add this field
-        type: String,
-        default: null
-    },
     
     // --- NEW FIELDS FOR PASSWORD RESET ---
     passwordResetToken: String,
@@ -42,22 +34,22 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 userSchema.methods.generateAuthTokens = function (res, rememberMe = false) {
     // Expiry calculation
     const longExpiry = 30 * 24 * 60 * 60 * 1000; // 30 days
-    const shortExpiry = 7 * 24 * 60 * 60 * 1000; // 7 day
+    const shortExpiry = 1 * 24 * 60 * 60 * 1000; // 1 day
     const cookieMaxAge = rememberMe ? longExpiry : shortExpiry;
-    const tokenExpiresIn = rememberMe ? '30d' : '7d'; // JWT expiry for refresh token
+    const tokenExpiresIn = rememberMe ? '30d' : '1d'; // JWT expiry for refresh token
 
     // 1. ACCESS TOKEN (Short-Lived: e.g., 15 minutes)
     const accessToken = jwt.sign(
         { id: this._id }, 
         process.env.JWT_ACCESS_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE } 
+        { expiresIn: '15m' } 
     );
 
     // 2. REFRESH TOKEN (Dynamic Expiry)
     const refreshToken = jwt.sign(
         { id: this._id },
         process.env.JWT_REFRESH_SECRET,
-          { expiresIn:tokenExpiresIn } // Token ki internal expiry dynamic ki
+        { expiresIn: tokenExpiresIn } // Token ki internal expiry dynamic ki
     );
     
     // Refresh Token ko HTTP-Only Cookie mein set karna
@@ -92,16 +84,6 @@ userSchema.methods.getResetPasswordToken = function () {
     return resetToken;
 };
 
-let User;
-try {
-    // Agar model already exist karta hai to use karo
-    User = mongoose.model('User');
-} catch (error) {
-    // Agar nahi hai to naya banao
-    User = mongoose.model('User', userSchema);
-}
 
+const User = mongoose.model('User', userSchema);
 module.exports = User;
-
-// const User = mongoose.model('User', userSchema);
-// module.exports = User;

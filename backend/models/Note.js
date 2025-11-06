@@ -1,3 +1,5 @@
+// File: models/Note.js (UPDATED FOR RICH TEXT MODAL)
+
 const mongoose = require('mongoose');
 
 // Custom URL validation function
@@ -65,7 +67,7 @@ const noteSchema = new mongoose.Schema({
         default: false
     },
     // --- EXISTING FIELDS ADJUSTED ---
-    isFeatured: { 
+    isFeatured: { // Renamed from isPinned (jaisa aapke dashboard data mein tha)
         type: Boolean,
         default: false
     },
@@ -81,7 +83,7 @@ const noteSchema = new mongoose.Schema({
 
 // Compound indexes (Optimized for user queries and sorting by date)
 noteSchema.index({ user: 1, createdAt: -1 });
-noteSchema.index({ user: 1, isDraft: 1 }); 
-noteSchema.index({ user: 1, isFeatured: -1, createdAt: -1 }); 
+noteSchema.index({ user: 1, isDraft: 1 }); // Drafts ko aasani se filter karne ke liye
+noteSchema.index({ user: 1, isFeatured: -1, createdAt: -1 }); // Featured notes ko front-load karne ke liye
 
 module.exports = mongoose.model('Note', noteSchema);

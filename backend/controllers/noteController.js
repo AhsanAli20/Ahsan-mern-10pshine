@@ -1,7 +1,11 @@
+// File: controllers/noteController.js (UPDATED)
+
 const asyncHandler = require('express-async-handler');
 const Note = require('../models/Note'); 
 const User = require('../models/user'); 
 const logger = require('../utils/logger'); 
+// 💡 Cloudinary ka setup aage karenge, abhi sirf placeholder functions/imports.
+// const cloudinary = require('../config/cloudinaryConfig'); 
 
 // Utility function to process categories string into an array
 const processCategories = (categoriesString) => {
@@ -13,6 +17,8 @@ const processCategories = (categoriesString) => {
         .filter(tag => tag.length > 0);
 };
 
+// --------------------------------------------------------------------------
+
 const getNotes = asyncHandler(async (req, res) => {
     // Ab hum Drafts aur Archived ko filter kar sakte hain, lekin abhi default all notes de rahe hain.
     const notes = await Note.find({ user: req.user._id }).sort({ createdAt: -1 });
@@ -20,31 +26,51 @@ const getNotes = asyncHandler(async (req, res) => {
     res.status(200).json(notes);
 });
 
-const createNote = asyncHandler(async (req, res) => {
+// --------------------------------------------------------------------------
 
+const createNote = asyncHandler(async (req, res) => {
+    // 💡 NEW DESTRUCTURING: Saare naye fields ko req.body se extract kar rahe hain
     const { 
         title, 
         content, 
         color, 
-        categories: categoriesString, 
+        categories: categoriesString, // Rename category to categoriesString
         hyperlink, 
         dueDate, 
         isDraft,
         isFeatured,
         isArchived
-       
+        // req.files will contain the file data when using Multer/Cloudinary middleware
     } = req.body; 
 
     const userId = req?.user?._id;
     
+    // Validation Check: Title aur Content zaroori hain
     if (!title || !content) {
         res.status(400);
         throw new Error('Please include both title and content for the note.');
     }
 
     try {
-        
+        // Categories/Tags string ko array mein convert karein
         const categoriesArray = processCategories(categoriesString);
+
+        // 📌 CLOUDINARY ATTACHMENTS LOGIC (Placeholder for next step)
+        const uploadedAttachments = [];
+        /* // Example logic for processing uploaded files (after middleware setup):
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                // 🔴 Placeholder: File upload to Cloudinary logic will go here
+                // const result = await cloudinary.uploader.upload(file.path, { folder: 'note-attachments' });
+                uploadedAttachments.push({
+                    fileId: 'TEMP_ID_' + Date.now(), // Use result.public_id
+                    fileName: file.originalname,
+                    mimeType: file.mimetype,
+                    size: file.size
+                });
+            }
+        }
+        */
 
         const note = await Note.create({
             user: userId,
@@ -75,6 +101,8 @@ const createNote = asyncHandler(async (req, res) => {
     }
 });
 
+// --------------------------------------------------------------------------
+
 const getNoteById = asyncHandler(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
@@ -90,6 +118,7 @@ const getNoteById = asyncHandler(async (req, res) => {
     }
 });
 
+// --------------------------------------------------------------------------
 
 const updateNote = asyncHandler(async (req, res) => {
     const note = await Note.findById(req.params.id);
@@ -104,12 +133,16 @@ const updateNote = asyncHandler(async (req, res) => {
         throw new Error('Not authorized to update this note');
     }
 
-    //UPDATE LOGIC: req.body ko seedha pass karne se pehle categories ko process karein
+    // 💡 UPDATE LOGIC: req.body ko seedha pass karne se pehle categories ko process karein
     const updateFields = { ...req.body };
     
     if (updateFields.categories) {
         updateFields.categories = processCategories(updateFields.categories);
     }
+    
+    // Cloudinary Attachment Update Logic (Advanced - will be handled later)
+    // Agar koi files attach hui hain, unko upload karke attachments array mein push karna hoga.
+
     const updatedNote = await Note.findByIdAndUpdate(
         req.params.id,
         updateFields, // Updated fields with processed categories
@@ -127,6 +160,8 @@ const updateNote = asyncHandler(async (req, res) => {
     });
 });
 
+// --------------------------------------------------------------------------
+
 const deleteNote = asyncHandler(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
@@ -139,6 +174,14 @@ const deleteNote = asyncHandler(async (req, res) => {
         res.status(401);
         throw new Error('Not authorized to delete this note');
     }
+
+    // 📌 CLOUDINARY CLEANUP LOGIC (Agar note delete ho raha hai toh uske attachments bhi delete hone chahiye)
+    /* if (note.attachments && note.attachments.length > 0) {
+        for (const attachment of note.attachments) {
+            // await cloudinary.uploader.destroy(attachment.fileId);
+        }
+    }
+    */
 
     await Note.deleteOne({ _id: req.params.id });
 
