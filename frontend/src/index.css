@@ -1,0 +1,162 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom animations for the particles */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-20px) rotate(180deg); 
+  }
+}
+
+/* Ensure smooth animations */
+* {
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00c6a7;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00a38c;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+* Tiptap/ProseMirror Styles */
+.ProseMirror {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  outline: none;
+}
+
+.ProseMirror p {
+  margin: 0.5rem 0;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  margin: 1rem 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.ProseMirror h1 {
+  font-size: 2rem;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5rem;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25rem;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.ProseMirror li {
+  margin: 0.25rem 0;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+}
+
+.ProseMirror code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+}
+
+.ProseMirror pre {
+  background-color: #1f2937;
+  color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* Dark mode support */
+.dark .ProseMirror code {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+.custom-tiptap-dark h1,
+.custom-tiptap-dark h2,
+.custom-tiptap-dark h3,
+.custom-tiptap-dark h4,
+.custom-tiptap-dark h5,
+.custom-tiptap-dark h6 {
+  /* Headings ko White color de diya */
+  color: #ffffff !important;
+}
+
+/* Optional: Baki text elements (p, li, blockquote) ko bhi white kar sakte hain */
+.custom-tiptap-dark p,
+.custom-tiptap-dark ul,
+.custom-tiptap-dark ol,
+.custom-tiptap-dark blockquote {
+  color: rgba(255, 255, 255, 0.9) !important; /* Thoda off-white */
+}
+
+q.inline-quote {
+    quotes: """ """ "'" "'";
+    font-style: italic;
+    color: #6b7280;
+    position: relative;
+}
+
+q.inline-quote::before {
+    content: open-quote;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+q.inline-quote::after {
+    content: close-quote;
+    font-size: 1.2em;
+    font-weight: bold;
+}
