@@ -107,8 +107,8 @@ const LoginForm = () => {
     }, []);
 
     return (
-        // ... (Return JSX is unchanged, it was only the logic above that needed fixing) ...
-        <div className="min-h-screen flex items-center justify-center bg-deep-purple-bg relative overflow-hidden">
+        // FIXED HEIGHT - NO SCROLL
+        <div className="min-h-screen flex items-center justify-center bg-deep-purple-bg relative overflow-hidden p-4">
             {/* ... (Background elements) ... */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-deep-purple-bg to-indigo-900 animate-gradient-x"></div>
             <div className="particles-container absolute inset-0 overflow-hidden"></div>
@@ -122,73 +122,73 @@ const LoginForm = () => {
                 <Trees size={35} className="text-white" />
             </div>
 
-            {/* MAIN LOGIN CARD */}
+            {/* COMPACT LOGIN CARD - NO INTERNAL SCROLL */}
             <div 
                 ref={formRef}
-                className={`w-full max-w-md p-8 rounded-3xl shadow-2xl backdrop-blur-xl bg-white/10 border border-white/20 z-10 
+                className={`w-full max-w-sm p-6 rounded-3xl shadow-2xl backdrop-blur-xl bg-white/10 border border-white/20 z-10 
                             transition-all duration-500 hover:shadow-[0_0_60px_rgba(167,139,250,0.3)]
                             ${shake ? 'animate-shake' : ''}`}
                 style={{
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                 }}
             >
-                {/* ... (Header) ... */}
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <User className="text-white w-8 h-8" />
+                {/* COMPACT HEADER */}
+                <div className="text-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                        <User className="text-white w-6 h-6" />
                     </div>
-                    <h2 className="text-4xl font-bold text-white mb-2 tracking-tight bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                    <h2 className="text-2xl font-bold text-white mb-1 tracking-tight bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                         Welcome Back
                     </h2>
-                    <p className="text-white/70 text-lg">Sign in to your account</p>
+                    <p className="text-white/70 text-sm">Sign in to your account</p>
                 </div>
                 
                 {/* Error Display: Server error */}
                 {error && (
-                    <div className="text-sm text-red-300 bg-red-900/40 p-3 rounded-lg mb-6 border border-red-500 flex items-center animate-fade-in transition-all">
-                        <AlertTriangle className='w-4 h-4 mr-2' />
-                        <span className='font-semibold'>Login Error:</span> {error}
+                    <div className="text-xs text-red-300 bg-red-900/40 p-2 rounded-lg mb-4 border border-red-500 flex items-center animate-fade-in transition-all">
+                        <AlertTriangle className='w-3 h-3 mr-2' />
+                        <span className='font-semibold'>Error:</span> {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     
-                    {/* EMAIL FIELD WITH VALIDATION ERROR */}
+                    {/* EMAIL FIELD - COMPACT */}
                     <div className="group">
-                        <label className="text-white/80 text-sm font-medium mb-2 block">Email Address</label>
-                        <div className={`flex items-center bg-white/15 rounded-xl p-4 transition-all duration-300 group-hover:bg-white/20
+                        <label className="text-white/80 text-xs font-medium mb-1 block">Email Address</label>
+                        <div className={`flex items-center bg-white/15 rounded-lg p-3 transition-all duration-300 group-hover:bg-white/20
                             ${validationErrors.email ? 'ring-2 ring-red-500' : 'focus-within:ring-2 focus-within:ring-purple-400 focus-within:bg-white/20'}`}>
-                            <Mail className={`w-5 h-5 mr-3 transition-colors duration-300 ${validationErrors.email ? 'text-red-300' : 'text-white/70 group-focus-within:text-purple-300'}`} />
+                            <Mail className={`w-4 h-4 mr-2 transition-colors duration-300 ${validationErrors.email ? 'text-red-300' : 'text-white/70 group-focus-within:text-purple-300'}`} />
                             <input
                                 type="email" 
                                 placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => { setEmail(e.target.value); setValidationErrors(prev => ({...prev, email: null})) }}
                                 required
-                                className="w-full bg-transparent text-white placeholder-white/60 focus:outline-none text-lg"
+                                className="w-full bg-transparent text-white placeholder-white/60 focus:outline-none text-sm"
                             />
                         </div>
                         {/* Error message */}
                         {validationErrors.email && (
-                            <p className="mt-2 text-sm text-red-400 flex items-center">
-                                <AlertTriangle className='w-3 h-3 mr-1' /> {validationErrors.email}
+                            <p className="mt-1 text-xs text-red-400 flex items-center">
+                                <AlertTriangle className='w-2 h-2 mr-1' /> {validationErrors.email}
                             </p>
                         )}
                     </div>
 
-                    {/* PASSWORD FIELD WITH VALIDATION ERROR */}
+                    {/* PASSWORD FIELD - COMPACT */}
                     <div className="group">
-                        <label className="text-white/80 text-sm font-medium mb-2 block">Password</label>
-                        <div className={`flex items-center bg-white/15 rounded-xl p-4 transition-all duration-300 group-hover:bg-white/20
+                        <label className="text-white/80 text-xs font-medium mb-1 block">Password</label>
+                        <div className={`flex items-center bg-white/15 rounded-lg p-3 transition-all duration-300 group-hover:bg-white/20
                             ${validationErrors.password ? 'ring-2 ring-red-500' : 'focus-within:ring-2 focus-within:ring-purple-400 focus-within:bg-white/20'}`}>
-                            <Lock className={`w-5 h-5 mr-3 transition-colors duration-300 ${validationErrors.password ? 'text-red-300' : 'text-white/70 group-focus-within:text-purple-300'}`} />
+                            <Lock className={`w-4 h-4 mr-2 transition-colors duration-300 ${validationErrors.password ? 'text-red-300' : 'text-white/70 group-focus-within:text-purple-300'}`} />
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => { setPassword(e.target.value); setValidationErrors(prev => ({...prev, password: null})) }}
                                 required
-                                className="w-full bg-transparent text-white placeholder-white/60 focus:outline-none text-lg pr-12"
+                                className="w-full bg-transparent text-white placeholder-white/60 focus:outline-none text-sm pr-8"
                             />
                             <button 
                                 type="button" 
@@ -196,21 +196,21 @@ const LoginForm = () => {
                                 className="text-white/70 hover:text-white transition-colors duration-200 p-1"
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                             >
-                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                         </div>
                         {/* Error message */}
                         {validationErrors.password && (
-                            <p className="mt-2 text-sm text-red-400 flex items-center">
-                                <AlertTriangle className='w-3 h-3 mr-1' /> {validationErrors.password}
+                            <p className="mt-1 text-xs text-red-400 flex items-center">
+                                <AlertTriangle className='w-2 h-2 mr-1' /> {validationErrors.password}
                             </p>
                         )}
                     </div>
                     
-                    {/* Remember Me and Forgot Password */}
-                    <div className="flex justify-between items-center">
+                    {/* Remember Me and Forgot Password - COMPACT */}
+                    <div className="flex justify-between items-center text-xs">
                         <label className="flex items-center text-white/90 cursor-pointer group">
-                            <div className={`relative w-5 h-5 rounded border-2 transition-all duration-200 ${
+                            <div className={`relative w-3 h-3 rounded border transition-all duration-200 ${
                                 rememberMe 
                                     ? 'bg-purple-500 border-purple-500' 
                                     : 'border-white/50 group-hover:border-white'
@@ -225,24 +225,23 @@ const LoginForm = () => {
                                 onChange={(e) => setRememberMe(e.target.checked)}
                                 className="absolute opacity-0"
                             />
-                            <span className="ml-3 text-sm">Remember me</span>
+                            <span className="ml-2">Remember me</span>
                         </label>
 
-                        {/* FORGOT PASSWORD FUNCTIONALITY (using Link) */}
                         <Link 
                             to="/forgot-password" 
-                            className="text-white/70 hover:text-purple-300 transition-colors duration-200 text-sm font-medium"
+                            className="text-white/70 hover:text-purple-300 transition-colors duration-200 font-medium"
                         >
                             Forgot password?
                         </Link>
                     </div>
 
-                    {/* ANIMATED LOGIN BUTTON */}
+                    {/* COMPACT LOGIN BUTTON */}
                     <button
                         ref={buttonRef}
                         type="submit"
                         disabled={isLoading}
-                        className={`w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-lg rounded-xl shadow-lg 
+                        className={`w-full py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-sm rounded-lg shadow-lg 
                                         hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]
                                         disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group
                                         ${isLoading ? 'cursor-wait' : ''}`}
@@ -254,7 +253,7 @@ const LoginForm = () => {
                         {/* Loading Animation */}
                         {isLoading && (
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             </div>
                         )}
                         
@@ -263,21 +262,21 @@ const LoginForm = () => {
                     </button>
                 </form>
                 
-                {/* REGISTER SECTION */}
-                <div className="mt-8 text-center">
-                    <div className="relative mb-4">
+                {/* COMPACT REGISTER SECTION */}
+                <div className="mt-6 text-center">
+                    <div className="relative mb-3">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-white/20"></div>
                         </div>
-                        <div className="relative flex justify-center text-sm">
+                        <div className="relative flex justify-center text-xs">
                             <span className="px-2 text-white/50 bg-transparent">New here?</span>
                         </div>
                     </div>
                     
                     <Link 
                         to="/register" 
-                        className="inline-block px-6 py-2 border-2 border-white/30 text-white rounded-full font-medium 
-                                        hover:bg-white/10 hover:border-white/50 transition-all duration-300 transform hover:scale-105"
+                        className="inline-block px-4 py-1.5 border border-white/30 text-white rounded-full font-medium 
+                                        hover:bg-white/10 hover:border-white/50 transition-all duration-300 transform hover:scale-105 text-sm"
                     >
                         Create Account
                     </Link>
