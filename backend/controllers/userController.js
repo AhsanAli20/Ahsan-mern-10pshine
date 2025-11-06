@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); 
 const sendEmail = require('../utils/emailUtils');
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const {cloudinary} = require('../config/cloudinary');  
 
 // @route   POST /api/users/signup
 const registerUser = asyncHandler(async (req, res) => {
@@ -42,7 +43,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         const { accessToken } = user.generateAuthTokens(res, rememberMe); 
 
-        res.json({
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -95,7 +96,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id).select('-password'); 
 
     if (user) {
-        res.json({
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -116,6 +117,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     if (user) {
         user.name = req.body.name || user.name;
         user.profilePicture = req.body.profilePicture || user.profilePicture;
+        console.log(req.body.profilePicture);
+
+        if (req.body.password) {
+            user.password = req.body.password;
+        }
 
         const updatedUser = await user.save();
 
