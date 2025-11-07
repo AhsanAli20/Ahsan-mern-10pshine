@@ -78,37 +78,38 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
     
     const isCurrentBgDark = isColorDark(color);
     const dynamicTextColor = isCurrentBgDark ? 'text-white' : 'text-gray-900';
- 
+    
+    // Input fields ke liye dynamic styles
+    const getInputStyles = () => {
+        if (isCurrentBgDark) {
+            return 'bg-gray-800/50 border-gray-600 text-white placeholder-gray-400';
+        } else {
+            return 'bg-white/80 border-gray-300 text-gray-900 placeholder-gray-500';
+        }
+    };
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
                 heading: { levels: [1, 2, 3] },
                 codeBlock: false,
-              //  code: true, // Inline code enabled
             }),
             Placeholder.configure({
                 placeholder: 'Start writing your note here...',
             }),
-                
-               InlineQuote,
-
+            InlineQuote,
         ],
         content: noteToEdit?.content || '',
         editorProps: {
             attributes: {
-                // 💡 FIX: Added 'whitespace-pre-wrap' to address the ProseMirror CSS warning
                 class: `prose prose-sm max-w-none focus:outline-none p-4 min-h-[20rem] transition-colors whitespace-pre-wrap ${
-                    isCurrentBgDark ? 'prose-invert custom-tiptap-dark' : 'prose-light' 
-                } ${
-                    isCurrentBgDark ? 'text-white' : 'text-gray-900' 
+                    isCurrentBgDark ? 'prose-invert text-white' : 'text-gray-900' 
                 }`,
             },
         },
     });
     
-    const inputClasses = `w-full p-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-sm ${
-        darkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400'
-    }`;
+    const inputClasses = `w-full p-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-sm ${getInputStyles()}`;
     
     const isSaveDisabled = !title.trim() || !editor?.getText().trim();
 
@@ -119,7 +120,7 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
             className={`p-2 rounded-md transition-all ${
                 isActive 
                     ? 'bg-emerald-500 text-white shadow-md' 
-                    : darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-700'
+                    : isCurrentBgDark ? 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
             type="button"
             title={label}
@@ -128,9 +129,6 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
             <Icon className="w-4 h-4" />
         </motion.button>
     );
-
-
-  
 
     const validateForm = () => {
         const newErrors = {};
@@ -199,14 +197,14 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
             >
                 
                 {/* Header */}
-                <div className={`p-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
+                <div className={`p-6 border-b ${isCurrentBgDark ? 'border-gray-600' : 'border-gray-200'} flex items-center justify-between`}>
                     <h2 className={`text-xl font-bold ${dynamicTextColor}`}>
                         {isEditing ? 'Edit Note' : 'Create New Note'}
                     </h2>
                     <button
                         onClick={onClose}
                         className={`p-2 rounded-full transition-all hover:scale-110 ${
-                            darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200'
+                            isCurrentBgDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-200/50'
                         } ${dynamicTextColor}`}
                     >
                         <X className="w-5 h-5" />
@@ -219,7 +217,6 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                         
                         {/* Title Input */}
                         <div>
-                            {/* dynamicTextColor applied here */}
                             <label className={`block text-sm font-semibold mb-2 ${dynamicTextColor}`}>
                                 Title <span className="text-red-500">*</span>
                             </label>
@@ -229,6 +226,10 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 className={`${inputClasses} text-lg font-semibold`}
+                                style={{ 
+                                    color: isCurrentBgDark ? 'white' : '#111827',
+                                    backgroundColor: isCurrentBgDark ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'
+                                }}
                             />
                             {errors.title && (
                                 <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
@@ -240,49 +241,45 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                         
                         {/* Toolbar & Editor */}
                         <div>
-                            {/* dynamicTextColor applied here */}
                             <label className={`block text-sm font-semibold mb-2 ${dynamicTextColor}`}>
                                 Content <span className="text-red-500">*</span>
                             </label>
                             {/* Toolbar */}
                             <div className={`flex flex-wrap gap-1 p-3 rounded-t-lg border border-b-0 ${
-                                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-300'
+                                isCurrentBgDark ? 'bg-gray-800/50 border-gray-600' : 'bg-gray-100 border-gray-300'
                             }`} onClick={(e) => e.stopPropagation()}>
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor?.isActive('bold')} icon={Bold} label="Bold" darkMode={darkMode} />
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor?.isActive('italic')} icon={Italic} label="Italic" darkMode={darkMode} />
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor?.isActive('strike')} icon={Strikethrough} label="Strikethrough" darkMode={darkMode} />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor?.isActive('bold')} icon={Bold} label="Bold" />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor?.isActive('italic')} icon={Italic} label="Italic" />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor?.isActive('strike')} icon={Strikethrough} label="Strikethrough" />
                                 
-                                <div className="w-px h-6 mx-1 bg-gray-400" />
+                                <div className={`w-px h-6 mx-1 ${isCurrentBgDark ? 'bg-gray-600' : 'bg-gray-400'}`} />
                                 
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor?.isActive('heading', { level: 1 })} icon={Heading1} label="Heading 1" darkMode={darkMode} />
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor?.isActive('heading', { level: 2 })} icon={Heading2} label="Heading 2" darkMode={darkMode} />
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor?.isActive('heading', { level: 3 })} icon={Heading3} label="Heading 3" darkMode={darkMode} />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor?.isActive('heading', { level: 1 })} icon={Heading1} label="Heading 1" />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor?.isActive('heading', { level: 2 })} icon={Heading2} label="Heading 2" />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor?.isActive('heading', { level: 3 })} icon={Heading3} label="Heading 3" />
                                 
-                                <div className="w-px h-6 mx-1 bg-gray-400" />
+                                <div className={`w-px h-6 mx-1 ${isCurrentBgDark ? 'bg-gray-600' : 'bg-gray-400'}`} />
                                 
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor?.isActive('bulletList')} icon={List} label="Bullet List" darkMode={darkMode} />
-                                <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor?.isActive('orderedList')} icon={ListOrdered} label="Ordered List" darkMode={darkMode} />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor?.isActive('bulletList')} icon={List} label="Bullet List" />
+                                <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor?.isActive('orderedList')} icon={ListOrdered} label="Ordered List" />
                                 
-                                
-                                {/* Blockquote button: Note: Blockquote hamesha poori line/paragraph par hi apply hota hai. */}
                                 <ToolbarButton 
                                     onClick={() => editor.chain().focus().toggleInlineQuote().run()} 
                                     isActive={editor?.isActive('inlineQuote')} 
                                     icon={Quote} 
                                     label="Inline Quote" 
-                                    darkMode={darkMode} 
                                 />
-                                <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} icon={Minus} label="Horizontal Rule" darkMode={darkMode} />
+                                <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} icon={Minus} label="Horizontal Rule" />
                                 
-                                <div className="w-px h-6 mx-1 bg-gray-400" />
+                                <div className={`w-px h-6 mx-1 ${isCurrentBgDark ? 'bg-gray-600' : 'bg-gray-400'}`} />
 
-                                <ToolbarButton onClick={() => editor.chain().focus().undo().run()} icon={Undo} label="Undo" darkMode={darkMode} />
-                                <ToolbarButton onClick={() => editor.chain().focus().redo().run()} icon={Redo} label="Redo" darkMode={darkMode} />
+                                <ToolbarButton onClick={() => editor.chain().focus().undo().run()} icon={Undo} label="Undo" />
+                                <ToolbarButton onClick={() => editor.chain().focus().redo().run()} icon={Redo} label="Redo" />
                             </div>
                             
                             {/* Editor Content */}
                             <div className={`rounded-b-lg border ${
-                                darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-300 bg-white'
+                                isCurrentBgDark ? 'border-gray-600 bg-gray-800/50' : 'border-gray-300 bg-white/80'
                             }`}>
                                 <EditorContent editor={editor} />
                             </div>
@@ -299,7 +296,6 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                             
                             {/* Categories */}
                             <div>
-                                {/* dynamicTextColor applied here */}
                                 <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dynamicTextColor}`}>
                                     <Tag className="w-4 h-4" /> Categories (comma separated)
                                 </label>
@@ -309,12 +305,15 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                     value={categories}
                                     onChange={(e) => setCategories(e.target.value)}
                                     className={inputClasses}
+                                    style={{ 
+                                        color: isCurrentBgDark ? 'white' : '#111827',
+                                        backgroundColor: isCurrentBgDark ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'
+                                    }}
                                 />
                             </div>
 
                             {/* Hyperlink */}
                             <div>
-                                {/* dynamicTextColor applied here */}
                                 <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dynamicTextColor}`}>
                                     <Link2 className="w-4 h-4" /> Hyperlink
                                 </label>
@@ -324,6 +323,10 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                     value={hyperlink}
                                     onChange={(e) => setHyperlink(e.target.value)}
                                     className={inputClasses}
+                                    style={{ 
+                                        color: isCurrentBgDark ? 'white' : '#111827',
+                                        backgroundColor: isCurrentBgDark ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'
+                                    }}
                                 />
                                 {errors.hyperlink && (
                                     <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
@@ -335,7 +338,6 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
 
                             {/* Due Date */}
                             <div>
-                                {/* dynamicTextColor applied here */}
                                 <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dynamicTextColor}`}>
                                     <Calendar className="w-4 h-4" /> Due Date
                                 </label>
@@ -344,6 +346,10 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                     value={dueDate}
                                     onChange={(e) => setDueDate(e.target.value)}
                                     className={inputClasses}
+                                    style={{ 
+                                        color: isCurrentBgDark ? 'white' : '#111827',
+                                        backgroundColor: isCurrentBgDark ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'
+                                    }}
                                 />
                                 {errors.dueDate && (
                                     <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
@@ -355,7 +361,6 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
 
                             {/* Color Picker */}
                             <div className="relative">
-                                {/* dynamicTextColor applied here */}
                                 <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dynamicTextColor}`}>
                                     <div 
                                         className="w-4 h-4 rounded border"
@@ -366,8 +371,10 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                 <button
                                     onClick={() => setShowColorPicker(!showColorPicker)}
                                     className={`${inputClasses} text-left flex items-center justify-between`}
-                                    // Button text color ko dynamicTextColor se set kiya
-                                    style={{ color: isCurrentBgDark ? '#ffffff' : '#111827' }} 
+                                    style={{ 
+                                        color: isCurrentBgDark ? 'white' : '#111827',
+                                        backgroundColor: isCurrentBgDark ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'
+                                    }}
                                 >
                                     <span>Select color</span>
                                     <div 
@@ -383,7 +390,7 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.95 }}
                                             className={`absolute top-full left-0 right-0 mt-2 p-4 rounded-lg border shadow-lg z-10 grid grid-cols-4 gap-2 ${
-                                                darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                                                isCurrentBgDark ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
                                             }`}
                                         >
                                             {COLOR_PALETTE.map((colorOption) => (
@@ -403,7 +410,6 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                                     />
                                                     <span 
                                                         className="text-xs font-medium"
-                                                        // Inline style yahan theek hai, kyunki yeh chota scope hai.
                                                         style={{ color: isColorDark(colorOption.value) ? colorOption.darkText : colorOption.lightText }}
                                                     >
                                                         {colorOption.name}
@@ -415,27 +421,23 @@ const NoteEditorModal = ({ onClose, darkMode, noteToEdit = null, onSave }) => {
                                 </AnimatePresence>
                             </div>
                         </div>
-
-                        
                     </div>
                 </div>
 
-                {/* Footer with updated button styles */}
-                <div className={`p-6 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-end gap-3`}>
+                {/* Footer */}
+                <div className={`p-6 border-t ${isCurrentBgDark ? 'border-gray-600' : 'border-gray-200'} flex items-center justify-end gap-3`}>
                     
-                    {/* Updated Cancel Button Style */}
                     <button
                         onClick={onClose}
                         className={`px-6 py-2 rounded-xl border transition-all duration-200 text-sm ${
-                            darkMode 
-                                ? 'text-gray-400 hover:text-white hover:bg-gray-700/50 border-gray-700'
+                            isCurrentBgDark 
+                                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50 border-gray-600'
                                 : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 border-gray-300'
                         }`}
                     >
                         Cancel
                     </button>
                     
-                    {/* Updated Save Button Style */}
                     <button
                         onClick={handleSave}
                         disabled={isSaveDisabled}

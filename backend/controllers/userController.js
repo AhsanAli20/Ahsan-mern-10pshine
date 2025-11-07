@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); // ResetPassword ke liye zaroori
 const sendEmail = require('../utils/emailUtils');
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const {cloudinary} = require('../config/cloudinary');  
 
 
 // @desc    Register a new user (Existing code)
@@ -47,7 +48,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         const { accessToken } = user.generateAuthTokens(res, rememberMe); 
 
-        res.json({
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -106,7 +107,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id).select('-password'); 
 
     if (user) {
-        res.json({
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -118,9 +119,34 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
-// -----------------------------------------------------------------------
-//                         NEW FORGET PASSWORD LOGIC
-// -----------------------------------------------------------------------
+// @route   PUT /api/users/profile
+// @desc    Update user profile
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        user.name = req.body.name || user.name;
+        user.profilePicture = req.body.profilePicture || user.profilePicture;
+        console.log(req.body.profilePicture);
+
+        if (req.body.password) {
+            user.password = req.body.password;
+        }
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            profilePicture: updatedUser.profilePicture,
+            createdAt: updatedUser.createdAt,
+        });
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
 
 // @desc    Send password reset email
 // @route   POST /api/users/forgotpassword
