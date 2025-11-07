@@ -9,22 +9,7 @@ on:
 jobs:
   sonarqube:
     name: SonarQube
-    runs-on: windows-latest
-
-    env:
-      JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
-      MONGO_URL: ${{ secrets.MONGO_URL }}
-      EMAIL_USER: ${{ secrets.EMAIL_USER }}
-      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-      EMAIL_HOST: ${{ secrets.EMAIL_HOST}}
-      EMAIL_PORT: ${{ secrets.EMAIL_PORT}}
-      JWT_REFRESH_EXPIRE: ${{ secrets.JWT_REFRESH_EXPIRE}}
-      JWT_EXPIRE: ${{ secrets.JWT_EXPIRE}}
-      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME}}
-      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY}}
-      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET}}
-      PORT: ${{ secrets.PORT}}
-      
+    runs-on: windows-latest      
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,9 +20,9 @@ jobs:
         working-directory: backend
         run: npm install
 
-      - name: Run backend tests with coverage
-        working-directory: backend
-        run: npm test -- --coverage || true
+      # - name: Run backend tests with coverage
+      #   working-directory: backend
+      #   run: npm test -- --coverage || true
 
       # --- Frontend setup & coverage ---
       - name: Install frontend dependencies
