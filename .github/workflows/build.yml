@@ -22,7 +22,7 @@ jobs:
 
       - name: Run backend tests with coverage
         working-directory: backend
-        run: npm run test -- --coverage || true
+        run: npm test -- --coverage || true
 
       # --- Frontend setup & coverage ---
       - name: Install frontend dependencies
