@@ -20,9 +20,9 @@ jobs:
         working-directory: backend
         run: npm install
 
-      # - name: Run backend tests with coverage
-      #   working-directory: backend
-      #   run: npm test -- --coverage || true
+      - name: Run backend tests with coverage
+        working-directory: backend
+        run: npm test -- --coverage || true
 
       # --- Frontend setup & coverage ---
       - name: Install frontend dependencies
