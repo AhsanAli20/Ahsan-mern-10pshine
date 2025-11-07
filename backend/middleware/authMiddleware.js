@@ -1,40 +1,60 @@
 const jwt = require('jsonwebtoken');
-const asyncHandler = require('express-async-handler');
-const User = require('../models/user'); // User model zaroori hai
+const User = require('../models/user');
 
-const protect = asyncHandler(async (req, res, next) => {
-    let token;
-
-    // Check karein ke header mein 'Authorization' maujood hai ya nahi
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.startsWith('Bearer')
-    ) {
-        try {
-            // 1. Access Token ko headers se nikalna
-            // Token ka format hota hai: "Bearer <token>"
+const protect = async (req, res, next) => {
+    try {
+        let token;
+        
+        if (req.headers.authorization && 
+            req.headers.authorization.startsWith('Bearer')) {
             token = req.headers.authorization.split(' ')[1];
-
-            // 2. Token ko verify karna
-            const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-
-            // 3. Token se user ki ID nikal kar database se user data fetch karna
-            // Password ko remove karna (select('-password')) zaroori hai
-            req.user = await User.findById(decoded.id).select('-password');
-            
-            // Agar sab theek hai, to agle function (route handler) par jane dega
-            next();
-        } catch (error) {
-            console.error(error);
-            res.status(401); // Unauthorized
-            throw new Error('Not authorized, token failed');
         }
-    }
 
-    if (!token) {
-        res.status(401); // Unauthorized
-        throw new Error('Not authorized, no token');
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Not authorized, no token provided'
+            });
+        }
+
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+
+        // Get user from database
+        const user = await User.findById(decoded.id).select('-password');
+        
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Attach user to request
+        req.user = user;
+        next();
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token'
+            });
+        }
+        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Token expired, please login again'
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: 'Authentication failed',
+            error: error.message
+        });
     }
-});
+};
 
 module.exports = protect;
